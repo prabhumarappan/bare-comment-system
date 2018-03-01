@@ -1,0 +1,79 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+    <script>
+        $(document).ready(function(){
+            $("form").submit(function(e){
+                if($("#name").val().length == 0){
+                    alert("Enter a valid username!");
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+    <style>
+            li{
+                list-style-type: none;
+                width: auto;
+                position: relative;
+                left: 10px;
+                margin: 20px;
+            }
+            span{
+                font-size: 13px;
+                display: block;
+                
+            }
+            a{
+                font-size: 13px;
+            }
+            li li{
+                
+            }
+            li a{            
+                font-size: 10px;
+                position: relative;
+                left: 10px;
+            }
+            li textarea{
+                position: relative;
+                top:10px;
+            }
+            button{
+                width: auto;
+                height: 30px;
+                text-align: center;
+                margin: auto;
+    
+            }
+            .login{
+                position: relative;
+                top:10vw;
+            }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+<div class="row">
+<div class="offset-md-5 row-offset-5 login">
+<h3>Login Form</h3>
+{% if error %}
+    <li style="color:red;">{{ error }}</li>
+{% endif %}
+<form action="/users/login/" method="post">
+    {% csrf_token %}
+    <input type="text" name="name" id="name">
+    <input type="submit" value="Login" id="login">
+</form>
+<a href="/users/signup/">SignUp</a>
+</div>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,166 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Single Post</title>
+    <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
+    <style>
+        body{
+            width: 60%;
+            margin-left: 20%;
+            margin-right: 20%;
+        }
+        li{
+            list-style-type: none;
+            width: auto;
+            position: relative;
+            left: 10px;
+            margin: 20px;
+        }
+        span{
+            font-size: 13px;
+            display: block;
+            
+        }
+        a{
+            font-size: 13px;
+        }
+        li li{
+            
+        }
+        li a{            
+            font-size: 10px;
+            position: relative;
+            left: 10px;
+        }
+        li textarea{
+            position: relative;
+            top:10px;
+        }
+        button{
+            width: auto;
+            height: 30px;
+            text-align: center;
+            margin: auto;
+
+        }
+    </style>
+</head>
+<body>
+<br>
+<div style="margin-left:20px;" id="comments">
+    {% for post in post %}
+        <h1>{{ post.title }}</h1>
+        <span style="font-size:12px;">-{{ post.author }}</span>
+        <a href='#' class='replya'>reply</a>
+    {% endfor %}
+    <li id="0">
+    </li>
+</div>
+{% autoescape off %}
+<script>
+    $(document).ready(function(){
+    var comments = '{{ comments }}';
+    var current_user = '{{ user }}';
+    var csrf_token = '{{ csrf_token }}';
+    comments = JSON.parse(comments);
+    for(var i=0;i<comments.length;i++){
+        parent_id = comments[i].parent_id;
+        comment_id = comments[i].id;
+        comment_message = comments[i].message;
+        comment_author = comments[i].author;
+        comment_created = Date(comments[i].created);
+        comment_created_formatted = comment_created.slice(4,25);
+        $("#"+parent_id).append(
+            "<li id="+comment_id+">"+comment_message+"</li>"
+        );
+        $("#"+comment_id).append(
+            "<span>"+"-"+comment_author+"</span><span>"+"-"+comment_created_formatted+"</span>"
+        );
+        if(current_user != comment_author){
+            $("#"+comment_id).append(
+            "<a href='#' class='replya'>reply</a>"
+            );
+        }
+        else{
+            $("#"+comment_id).append(
+            "<a href='#' class='deletea'>delete</a>"
+            );
+        }
+        var toshift =$("#"+parent_id).parents('li').length;
+        $("#"+comment_id).css("margin-left",toshift*10);
+
+        
+    }
+
+    $(".replya").click(function(e){
+        e.preventDefault();
+        if($(this).next('div').length>0){
+            $(this).next().remove();
+        }
+        else{
+            $('#replydiv').not(this).remove();
+            $("<div id='replydiv'><textarea></textarea><button type='submit' class='btn' id='replybutton'>Reply</button></div>").insertAfter(this);
+
+            $("#replybutton").click(function(){
+                comment_message = $(this).prev().val();
+                comment_message = comment_message.replace(/[\n\r]/g, '');
+                if(comment_message.length == 0){
+                    alert("Cannot Publish a Empty Comment!");
+                    return;
+                }
+                parent_id = $(this).parent().parent().attr("id");
+                if(parent_id == "comments"){
+                    parent_id = 0;
+                }
+                url = $(location).attr("href").split("/");
+                post_id = parseInt(url[url.length-2]);
+                console.log(parent_id);
+                console.log(comment_message);
+                commentdata = {
+                    "parent_id":parent_id,
+                    "comment":comment_message,
+                    csrfmiddlewaretoken: csrf_token
+                }
+               $.ajax({
+                   type:"POST",
+                   url:"/posts/"+post_id+"/",
+                   data:commentdata,
+                   success:function(data){
+                       location.reload();
+                   }
+               });
+            });
+        }
+    });
+
+    $(".deletea").click(function(){
+        comment_id = $(this).parent().attr("id");
+        url = $(location).attr("href").split("/");
+        post_id = parseInt(url[url.length-2]);
+        delete_data = {
+            "comment_id":comment_id,
+            csrfmiddlewaretoken: csrf_token
+        }
+        console.log(delete_data);
+        $.ajax({
+            type:"POST",
+            url:"/posts/delete/"+post_id+"/",
+            data:delete_data,
+            success:function(data){
+                location.reload();
+            }
+        });
+    });
+
+
+
+    });
+
+</script>
+{% endautoescape %}
+</body>
+</html>

@@ -1,0 +1,94 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Post</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+    <script>
+        $(document).ready(function(){
+            $("form").submit(function(e){
+                var posttitle = $("#posttext").val();
+                var csrf_token = '{{ csrf_token }}';
+                posttitle = posttitle.replace(/[\n\r]/g, '');
+                console.log(posttitle);
+                if(posttitle.length == 0){
+                    alert("Enter a valid post!");
+                    e.preventDefault();
+                }
+                else{
+                    e.preventDefault();
+                    var postdata = {
+                        "posttitle":posttitle,
+                        csrfmiddlewaretoken: csrf_token
+                    };
+                    $.ajax({
+                        type:"POST",
+                        url:"/posts/add/",
+                        data:postdata,
+                        success:function(data){
+                            window.location.href = "/";
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+    <style>
+            li{
+                list-style-type: none;
+                width: auto;
+                position: relative;
+                left: 10px;
+                margin: 20px;
+            }
+            span{
+                font-size: 13px;
+                display: block;
+                
+            }
+            a{
+                font-size: 13px;
+            }
+            li li{
+                
+            }
+            li a{            
+                font-size: 10px;
+                position: relative;
+                left: 10px;
+            }
+            li textarea{
+                position: relative;
+                top:10px;
+            }
+            button{
+                width: auto;
+                height: 30px;
+                text-align: center;
+                margin: auto;
+    
+            }
+            .addpost{
+                position: relative;
+                top:10vw;
+            }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+<div class="row">
+<div class="offset-md-5 row-offset-6 addpost">
+<h3>Login Form</h3>
+<form action="/posts/add/" method="post">
+    <textarea placeholder="Enter your post" id="posttext" name="post"></textarea>
+    <br><input type="submit" value="Create" id="login">
+</form>
+<a href="/">Home</a>
+</div>
+</div>
+</div>
+</body>
+</html>

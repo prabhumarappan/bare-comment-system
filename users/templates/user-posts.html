@@ -1,0 +1,63 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Posts</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+    <style>
+            li{
+                list-style-type: none;
+                width: auto;
+                position: relative;
+                left: 10px;
+                margin: 20px;
+            }
+            span{
+                font-size: 13px;
+                display: block;
+                
+            }
+            a{
+                font-size: 13px;
+            }
+            li li{
+                
+            }
+            li a{            
+                font-size: 10px;
+                position: relative;
+                left: 10px;
+            }
+            li textarea{
+                position: relative;
+                top:10px;
+            }
+            button{
+                width: auto;
+                height: 30px;
+                text-align: center;
+                margin: auto;
+    
+            }
+            div a{
+                font-size: 25px;
+            }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <p style="text-align:center;font-size:35px;"><b>User Posts</b></p>
+    <div class="row">
+    {% for post in posts%}
+        <div class="offset-md-4 col-md-8">
+                <a href="/posts/{{ post.id }}/">{{ post.title }}</a>
+                ({{ post.author }})
+        </div>
+    {% endfor %}
+    </div>
+</div>
+</body>
+</html>
